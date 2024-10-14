@@ -1,0 +1,104 @@
+﻿@model Qr_and_Bar_code_Generator.Models.QrModel
+
+@{
+    ViewBag.Title = "CreateQRCode";
+}
+
+
+
+
+<div class="form-horizontal">
+    <div class="form-group">
+        @Html.LabelFor(model => model.QRCodeText, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="input-group mb-3">
+            @Html.EditorFor(model => model.QRCodeText, new { htmlAttributes = new { @class = "form-control rounded-0" } })
+            <div class="input-group-append">
+                <input type="submit" value="Create Qr Code" id ="QrCode"class="btn btn-primary rounded-0" />
+            </div>
+        </div>
+        @Html.ValidationMessageFor(model => model.QRCodeText, "", new { @class = "text-danger" })
+    </div>
+    <div class="QrCodeImg">
+
+    </div>
+</div>
+
+
+
+
+<div class="form-horizontal">
+    <div class="form-group">
+        @Html.LabelFor(model => model.BarCodeText, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="input-group mb-3">
+            @Html.EditorFor(model => model.BarCodeText, new { htmlAttributes = new { @class = "form-control rounded-0" } })
+            <div class="input-group-append">
+                <input type="submit" value="Create Bar Code" id ="BarCode" class="btn btn-primary rounded-0" />
+            </div>
+        </div>
+        @Html.ValidationMessageFor(model => model.BarCodeText, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="barCodeImg">
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#QrCode").click(function () {
+            let text = $("#QRCodeText").val();
+            $.ajax({
+                url: '@Url.Action("CreateQRCode", "Home")',
+                data: { text: text },
+                type: "POST",
+                success: function (data) {
+                    console.log("qr data is", data);
+                    updateQrCodeImg(data);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+
+        
+
+        $("#BarCode").click(function () {
+            let text = $("#BarCodeText").val();
+            $.ajax({
+                url: '@Url.Action("GenerateBarCode", "Home")',
+                data: { text: text },
+                type: "POST",
+                success: function (data) {
+                    console.log("bar data is", data);
+                    updateBarCodeImg(data);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+
+        function updateBarCodeImg(data) {
+            var update = $(".barCodeImg");
+
+            let newImg = '<img src=' + data + '>';
+
+            update.append(newImg);
+
+        }
+
+
+        function updateQrCodeImg(data) {
+            var update = $(".QrCodeImg");
+
+            let newImg = '<img src=' + data + ' style="width:300px;height:300px">';
+
+            update.append(newImg);
+
+        }
+    });
+</script>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
